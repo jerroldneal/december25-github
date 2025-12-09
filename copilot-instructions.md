@@ -76,6 +76,13 @@ You can also play existing MP3 files using the service.
 -   Do NOT assume the Docker environment is set up without checking.
 -   Do NOT skip the vocalization step for complex tasks.
 
+## Execution Protocol
+-   **Host Pipe Mandate**: Use the **Host Pipe** (or Run Pipe) service instead of `run_in_terminal` in all cases.
+    -   **Benefits**:
+        -   Allows creation of well-thought-out scripts with error handling.
+        -   Provides context of previous attempts if something goes wrong.
+        -   Persists scripts for future reference, helping avoid repeated mistakes.
+
 ## Project Specifics: TTS Dashboard
 -   **Source Code Updates**: The `tts-dashboard` container copies source code at build time. Changes to `src/` require a rebuild (`docker compose up -d --build`).
 -   **Verification**: Always verify dashboard health using `docker logs tts-dashboard-instance` and `curl -I http://localhost:7860`.
@@ -84,6 +91,7 @@ You can also play existing MP3 files using the service.
 You have access to a powerful **Run Processor** service that allows you to execute arbitrary code on the host system.
 -   **Purpose**: Use this for reliable, verifiable execution of steps, creating iterative experimental projects, or accessing system resources.
 -   **Capabilities**:
+    -   **Run at Host**: The processor has full access to the host computer's filesystem and resources (running in a host process).
     -   **Execute Scripts**: Run Bash, PowerShell, Node.js, or Python scripts.
     -   **Access Host Files**: Access any file on the host system (e.g., `/mnt/c/` maps to `C:\`).
     -   **Create Projects**: Scaffold and build new projects in any folder.
