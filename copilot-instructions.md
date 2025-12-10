@@ -77,34 +77,43 @@ You can also play existing MP3 files using the service.
 -   Do NOT skip the vocalization step for complex tasks.
 
 ## Execution Protocol
--   **Host Pipe Mandate**: Use the **Host Pipe** (or Run Pipe) service instead of `run_in_terminal` in all cases.
+-   **Run Processor Mandate**: Use the **Run Processor** instead of `run_in_terminal` in all cases.
     -   **Benefits**:
         -   Allows creation of well-thought-out scripts with error handling.
         -   Provides context of previous attempts if something goes wrong.
         -   Persists scripts for future reference, helping avoid repeated mistakes.
 
-## Project Specifics: TTS Dashboard
--   **Source Code Updates**: The `tts-dashboard` container copies source code at build time. Changes to `src/` require a rebuild (`docker compose up -d --build`).
--   **Verification**: Always verify dashboard health using `docker logs tts-dashboard-instance` and `curl -I http://localhost:7860`.
+## Run Processor Protocol (Agent Empowerment)
+You have access to a **Run Processor** service for executing complex or system-level tasks.
 
-## Project Specifics: Run Processor (Agent Empowerment)
-You have access to a powerful **Run Processor** service that allows you to execute arbitrary code on the host system.
--   **Purpose**: Use this for reliable, verifiable execution of steps, creating iterative experimental projects, or accessing system resources.
--   **Capabilities**:
-    -   **Run at Host**: The processor has full access to the host computer's filesystem and resources (running in a host process).
-    -   **Execute Scripts**: Run Bash, PowerShell, Node.js, or Python scripts.
-    -   **Access Host Files**: Access any file on the host system (e.g., `/mnt/c/` maps to `C:\`).
-    -   **Create Projects**: Scaffold and build new projects in any folder.
--   **Usage**:
-    -   **Option A (HTTP Trigger)**: Use the `http-receiver` service (similar to TTS).
-        -   **URL**: `http://localhost:3006/<lang>?text=<command>` or `?filePath=<path>`
-        -   **Langs**: `bash`, `pwsh`, `node`, `python`
-    -   **Option B (Direct File)**: Create a script file directly in the watch folder.
-        -   **Path**: `C:\.run\todo\<filename>.<ext>`
-        -   **Note**: The processor watches this folder and executes immediately.
-    -   **Logs**: Check `docker logs run-processor-instance` for output.
--   **Example Use Case**: Creating a temporary React app to test a component, then deleting it.
--   **Example Use Case**: Running a complex cleanup script across multiple network drives.
+### When to Use
+1.  **Host Access**: When you need to run commands on the Windows Host (e.g., `npm install` in a host folder, managing system files).
+2.  **Long-Running Tasks**: When a task might time out in a simple terminal session.
+3.  **Reliability**: When you need automatic retries and history tracking.
+
+### How to Use
+Do NOT run complex commands directly in the terminal. Instead, **create a Manifest File**.
+
+#### 1. Create the Script
+Write the logic to a script file (e.g., `.ps1`, `.sh`, `.py`, `.js`).
+*   **Host Scripts**: Save to `C:\.run\scripts\<script_name>`
+*   **Container Scripts**: Save to `data/scripts/<script_name>`
+
+#### 2. Create the Manifest
+Write a JSON file to the trigger directory.
+*   **Host Trigger**: `C:\.run\todo-on-host\<task_id>.json`
+*   **Container Trigger**: `data/todo/<task_id>.json`
+
+**Manifest Template:**
+```json
+{
+  "id": "unique-task-id",
+  "goal": "Brief description of goal",
+  "script_ref": "scripts/<script_name>",
+  "language": "powershell",
+  "max_retries": 3
+}
+```
 
 ### Safety & Responsibility
 With great power comes great responsibility. The host system is your sandbox.
