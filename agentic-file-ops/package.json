@@ -1,0 +1,12 @@
+{
+  "name": "mcp-server-local",
+  "version": "1.0.0",
+  "description": "Local MCP server for file operations",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.6.0"
+  }
+}
