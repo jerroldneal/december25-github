@@ -82,6 +82,12 @@ You can also play existing MP3 files using the service.
         -   Allows creation of well-thought-out scripts with error handling.
         -   Provides context of previous attempts if something goes wrong.
         -   Persists scripts for future reference, helping avoid repeated mistakes.
+-   **Iterative Scripting**:
+    -   **Comprehensive Scripts**: Create comprehensive scripts that complete multiple steps rather than shooting individual commands at the terminal.
+    -   **Error Handling**: Anticipate potential failures in your scripts. Include logic to correct damage or retry operations.
+    -   **Refinement**: If a script fails, analyze the failure, revise the script to address the issue, and run it again. Do not revert to manual terminal commands.
+    -   **Graceful Workflow**: This approach ensures a more robust and reliable execution flow compared to fragile terminal interactions.
+-   **Avoid Terminal**: Stop using `run_in_terminal` unless absolutely necessary (e.g., for simple read-only checks that don't warrant a script).
 
 ## Run Processor Protocol (Agent Empowerment)
 You have access to a **Run Processor** service for executing complex or system-level tasks.
@@ -115,6 +121,12 @@ Write a JSON file to the trigger directory.
 }
 ```
 
+### Error Detection & Monitoring
+When using the Run Processor, you must actively monitor for failures.
+-   **Check stderr**: The Run Processor may not fail the task status even if the script writes to stderr. Always check the output logs for error messages.
+-   **Verify Exit Codes**: Ensure your scripts exit with a non-zero code on failure so the processor can detect it.
+-   **Manual Verification**: If a task completes but the expected outcome is missing (e.g., file not created, service not running), manually verify the logs or run a verification command.
+
 ### Safety & Responsibility
 With great power comes great responsibility. The host system is your sandbox.
 -   **Verify Context**: Always verify the current working directory (`pwd`) before executing commands, especially deletions (`rm`).
@@ -126,6 +138,12 @@ You are authenticated and have full access to GitHub via the host system.
 -   **Capabilities**: You can create private repositories, branch, fork, clone, and push code.
 -   **Reference**: You can clone any repository to `C:\experiments` (or similar) to use as reference or a starting point.
 -   **Workflow**: Feel free to create new repositories for experimental projects to keep the main workspace clean.
+
+## File Persistence Protocol
+-   **Immediate Writes**: All file content generated must be immediately written to disk using the appropriate tool (`create_file`, `replace_string_in_file`).
+-   **No Pending Edits**: Do not rely on the user to manually "Keep" or apply changes from the chat interface. If a file is needed for a task, write it explicitly.
+-   **Agentic Reliability**: Inconsistent file saving breaks agent workflows. Ensure every file creation or edit is finalized via a tool call.
+-   **Auto-Save Preference**: Always prefer methods that result in immediate file persistence. If a tool or workflow offers an "auto-save" or "auto-apply" option, enable it. Avoid workflows that require manual user confirmation for file edits unless strictly necessary for safety.
 
 ## Prompts
 
