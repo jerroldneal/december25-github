@@ -1,12 +1,14 @@
-const { Server } = require("@modelcontextprotocol/sdk/server/index.js");
-const { StdioServerTransport } = require("@modelcontextprotocol/sdk/server/stdio.js");
-const {
+import express from "express";
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
-} = require("@modelcontextprotocol/sdk/types.js");
-const fs = require("fs");
-const path = require("path");
-const { execSync } = require("child_process");
+} from "@modelcontextprotocol/sdk/types.js";
+import fs from "fs";
+import path from "path";
+
+const app = express();
 
 // Initialize MCP Server
 const server = new Server(
@@ -21,7 +23,7 @@ const server = new Server(
   }
 );
 
-// Helper for atomic write logic (reused from write_file.js)
+// Helper for atomic write logic
 function atomicWrite(targetPath, content) {
   const tempDir = process.env.TEMP || process.env.TMP || "/tmp";
   const fileName = path.basename(targetPath);
@@ -42,7 +44,7 @@ function atomicWrite(targetPath, content) {
   };
   fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2));
 
-  // 3. Copy to Target (using internal logic instead of spawning node process for speed)
+  // 3. Copy to Target
   const targetDir = path.dirname(targetPath);
   if (!fs.existsSync(targetDir)) {
     fs.mkdirSync(targetDir, { recursive: true });
@@ -115,10 +117,30 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 });
 
-// Start Server
-async function run() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-}
+let transport;
 
-run().catch(console.error);
+app.get("/sse", async (req, res) => {
+  console.log("New SSE connection");
+  transport = new SSEServerTransport("/messages", res);
+  await server.connect(transport);
+});
+
+app.post("/messages", async (req, res) => {
+  console.log("Received message");
+  if (transport) {
+    await transport.handlePostMessage(req, res);
+  }
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+});
+
+process.on('exit', (code) => {
+  console.log('Process exiting with code:', code);
+});
+
+const PORT = 3002;
+app.listen(PORT, () => {
+  console.log(`Local MCP server running on http://localhost:${PORT}/sse`);
+});
