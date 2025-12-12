@@ -155,19 +155,33 @@ To modify or create files without triggering the VS Code "Keep/Undo" UI, you mus
     { "target": "<absolute_target_path>", "operation": "create", "timestamp": <epoch> }
     ```
 2.  **Stage**: Use `create_file` to write content to `<temp_path>`.
-3.  **Commit**: Use `run_in_terminal` to move the file: `mv <temp_path> <target_path>`.
+3.  **Commit**: Use `run_in_terminal` to copy the file using the ops script:
+    ```bash
+    node .github/tools/file_ops.js copy "<temp_path>" "<target_path>"
+    ```
+4.  **Cleanup**: Use `run_in_terminal` to remove the temp and meta files:
+    ```bash
+    node .github/tools/file_ops.js delete "<temp_path>" && node .github/tools/file_ops.js delete "<temp_path>.meta.json"
+    ```
 
 ### 3. Modification Workflow
 1.  **Meta**: Create `<temp_path>.meta.json` containing:
     ```json
     { "target": "<absolute_target_path>", "operation": "edit", "timestamp": <epoch> }
     ```
-2.  **Fetch**: Use `run_in_terminal` to copy the original file: `cp <target_path> <temp_path>`.
+2.  **Fetch**: Use `run_in_terminal` to copy the original file:
+    ```bash
+    node .github/tools/file_ops.js copy "<target_path>" "<temp_path>"
+    ```
 3.  **Modify**: Use `replace_string_in_file` (or `create_file` for full rewrite) on `<temp_path>`.
-4.  **Commit**: Use `run_in_terminal` to overwrite the original: `mv -f <temp_path> <target_path>`.
-
-### 4. Verification
--   Always verify the final file exists and has the expected content using `ls` or `cat` in the terminal.
+4.  **Commit**: Use `run_in_terminal` to overwrite the original:
+    ```bash
+    node .github/tools/file_ops.js copy "<temp_path>" "<target_path>"
+    ```
+5.  **Cleanup**: Use `run_in_terminal` to remove the temp and meta files:
+    ```bash
+    node .github/tools/file_ops.js delete "<temp_path>" && node .github/tools/file_ops.js delete "<temp_path>.meta.json"
+    ```
 
 ## Prompts
 
