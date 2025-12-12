@@ -54,15 +54,15 @@ To vocalize text, you must interact with the local Edge TTS MCP service running 
 2.  **Trigger Service**: Write the text file directly to the watch folder.
     -   **Path**: `C:\.tts\todo\speak-<timestamp>.txt`
     -   **Note**: The TTS processor watches this folder and will automatically process new files. Do NOT call the HTTP endpoint.
-    -   **Method**: Use `create_file` to write the file. The workspace settings are configured to auto-accept these edits.
+    -   **Method**: Use `atomic_write_file` to write the file.
 
 ### Code Example (JavaScript/TypeScript)
 ```javascript
 // Create a file in the watch folder
 const textToSpeak = "Processing request.";
 const todoFilePath = `C:\\.tts\\todo\\speak-${Date.now()}.txt`;
-// Use create_file tool
-await create_file(todoFilePath, textToSpeak);
+// Use atomic_write_file tool
+await atomic_write_file(todoFilePath, textToSpeak);
 ```
 
 ## Audio Playback
@@ -143,45 +143,24 @@ You are authenticated and have full access to GitHub via the host system.
 -   **Workflow**: Feel free to create new repositories for experimental projects to keep the main workspace clean.
 
 ## File Persistence Protocol (Agentic Reliability)
-To modify or create files without triggering the VS Code "Keep/Undo" UI, you must use a **Staged Protocol** with a **Meta File** for robustness.
+To modify or create files without triggering the VS Code "Keep/Undo" UI, you must use the **Atomic Write File** tool provided by the local MCP server.
 
-### 1. Setup
--   **Staging Directory**: `C:\Users\BITCOI~1\AppData\Local\Temp`
--   **Meta File**: A JSON file accompanying the staged file containing recovery info.
+### Protocol
+-   **Tool**: `atomic_write_file`
+-   **Purpose**: Safely writes content to a file using a staged approach (Temp -> Meta -> Copy -> Delete) to bypass UI restrictions.
+-   **Usage**: Simply call the tool with the target file path and the desired content.
 
-### 2. Creation Workflow
-1.  **Meta**: Create `<temp_path>.meta.json` containing:
-    ```json
-    { "target": "<absolute_target_path>", "operation": "create", "timestamp": <epoch> }
-    ```
-2.  **Stage**: Use `create_file` to write content to `<temp_path>`.
-3.  **Commit**: Use `run_in_terminal` to copy the file using the ops script:
-    ```bash
-    node .github/tools/file_ops.js copy "<temp_path>" "<target_path>"
-    ```
-4.  **Cleanup**: Use `run_in_terminal` to remove the temp and meta files:
-    ```bash
-    node .github/tools/file_ops.js delete "<temp_path>" && node .github/tools/file_ops.js delete "<temp_path>.meta.json"
-    ```
+### Workflow
+1.  **Identify Target**: Determine the absolute path of the file you wish to create or modify.
+2.  **Prepare Content**: Generate the full content for the file.
+3.  **Execute**: Call the `atomic_write_file` tool.
+    -   `filePath`: The absolute path to the target file.
+    -   `content`: The complete content to write.
 
-### 3. Modification Workflow
-1.  **Meta**: Create `<temp_path>.meta.json` containing:
-    ```json
-    { "target": "<absolute_target_path>", "operation": "edit", "timestamp": <epoch> }
-    ```
-2.  **Fetch**: Use `run_in_terminal` to copy the original file:
-    ```bash
-    node .github/tools/file_ops.js copy "<target_path>" "<temp_path>"
-    ```
-3.  **Modify**: Use `replace_string_in_file` (or `create_file` for full rewrite) on `<temp_path>`.
-4.  **Commit**: Use `run_in_terminal` to overwrite the original:
-    ```bash
-    node .github/tools/file_ops.js copy "<temp_path>" "<target_path>"
-    ```
-5.  **Cleanup**: Use `run_in_terminal` to remove the temp and meta files:
-    ```bash
-    node .github/tools/file_ops.js delete "<temp_path>" && node .github/tools/file_ops.js delete "<temp_path>.meta.json"
-    ```
+### Note
+-   This tool handles the staging, meta-data creation, copying, and cleanup automatically.
+-   Do **NOT** use `create_file` or `replace_string_in_file` for files that are watched by VS Code or might trigger the "Keep/Undo" dialog.
+-   Do **NOT** manually implement the staged protocol using terminal commands anymore.
 
 ## Prompts
 
