@@ -149,6 +149,7 @@ To modify or create files without triggering the VS Code "Keep/Undo" UI, you mus
 -   **Tool**: `atomic_write_file`
 -   **Purpose**: Safely writes content to a file using a staged approach (Temp -> Meta -> Copy -> Delete) to bypass UI restrictions.
 -   **Usage**: Simply call the tool with the target file path and the desired content.
+-   **Discovery**: This tool is exposed via the `local-file-ops` MCP server configured in `.vscode/mcp.json`. It requires the server to be running (node process). If the tool is not visible, verify the server configuration and ensure the VS Code window has been reloaded.
 
 ### Workflow
 1.  **Identify Target**: Determine the absolute path of the file you wish to create or modify.
