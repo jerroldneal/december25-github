@@ -81,6 +81,10 @@ You can also play existing MP3 files using the service.
 -   Do NOT use the old file-based "Speak" workflow (`atomic_write_file` to `.tts/todo`). Always use the MCP tool.
 
 ## Execution Protocol
+-   **Timeout Mandate**: You must NEVER call a script or command without specifying a timeout.
+    -   **Usage**: Use the `timeout` command (or equivalent) to wrap your execution.
+    -   **Example**: `timeout 20 ./my_script.sh`
+    -   **Reasoning**: Prevents hanging processes from blocking the agent or the system indefinitely.
 -   **Run Processor Mandate**: Use the **Run Processor** instead of `run_in_terminal` for ALL complex tasks, logic, and stateful operations.
     -   **NEVER USE** choppy single command `run_in_terminal` calls for multi-step logic.
     -   **Benefits**:
