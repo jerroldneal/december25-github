@@ -98,6 +98,10 @@ You can also play existing MP3 files using the service.
     -   **Graceful Workflow**: This approach ensures a more robust and reliable execution flow compared to fragile terminal interactions.
 -   **Avoid Terminal**: Stop using `run_in_terminal` unless absolutely necessary (e.g., for simple read-only checks like `ls` or `cat`).
     -   **EXCEPTION**: The "Terminal Bypass" for file editing (see below) is the ONLY allowed use of `run_in_terminal` for modification.
+-   **Terminal Directory Verification**:
+    -   **Mandate**: Before running ANY command via `run_in_terminal`, you MUST first execute `pwd` to verify the current working directory.
+    -   **Correction**: If the directory is incorrect, you MUST `cd` to the correct directory using an absolute path.
+    -   **Verification**: If the `cd` command fails or the subsequent `pwd` check is incorrect, you must repeat the `pwd` check and correction steps until confirmed.
 
 ## Run Processor Protocol (Agent Empowerment)
 You have access to a **Run Processor** service for executing complex or system-level tasks.
