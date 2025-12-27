@@ -176,7 +176,7 @@ Apply to ALL code regardless of language or framework:
         "requestId": "abc-123"
       }
     }
-    
+
     // Error
     {
       "success": false,
