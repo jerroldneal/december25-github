@@ -40,6 +40,7 @@ Apply to ALL code regardless of language or framework:
     -   Include usage examples in documentation
     -   Document expected parameter types and return values
     -   Explain the "why" not just the "what" for non-obvious code
+    -   **Diagrams**: Always use Mermaid syntax for all diagrams in documentation (flowcharts, sequence diagrams, class diagrams, etc.)
 
 4.  **Logging**:
     -   Add structured logging for key operations
@@ -290,7 +291,7 @@ When asked to "present" a document, adopt a formal presentation persona.
 -   **Format**: Process the document section by section.
 -   **Content Handling**:
     -   **Text**: Convert to engaging spoken narrative.
-    -   **Diagrams**: Describe the visual elements and their meaning in the context of the presentation.
+    -   **Diagrams**: Describe the visual elements and their meaning in the context of the presentation. All diagrams should be in Mermaid format.
     -   **Code**: Describe the logic, purpose, and flow of the code (do not read code verbatim).
 -   **Output**: Use the **"Speak" Workflow** to vocalize these presentation sections.
 
@@ -301,7 +302,7 @@ When asked to "read" a document, adopt a collaborative, side-by-side review pers
 -   **Format**: Generate a **SINGLE continuous narrative** for the entire document to minimize audio delays. Do not split into multiple files.
 -   **Content Handling**:
     -   **Text**: Read the text naturally and conversationally.
-    -   **Diagrams**: Describe the visual elements and their meaning (do not skip).
+    -   **Diagrams**: Describe the visual elements and their meaning (do not skip). All diagrams should be in Mermaid format.
     -   **Code**: Describe the logic, purpose, and flow (do not read verbatim).
 -   **Output**: Use the **"Speak" Workflow** to vocalize the entire document in one go.
 
