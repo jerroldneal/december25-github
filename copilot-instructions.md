@@ -378,11 +378,13 @@ To vocalize text, you must use the `mcp_kokoro-tts_speak` tool.
 ```
 
 ## Audio Playback
-You can also play existing MP3 files using the service.
--   **URL**: `http://localhost:3006/play-mp3?filePath=<absolute_path_to_mp3>`
+You can also play existing MP3 files using the MCP server API.
+-   **Endpoint**: `http://localhost:3021/api/speak`
+-   **Method**: POST with JSON body containing `{"text":"...", "mp3":true, "mp3_path":"/app/data/mp3/filename.mp3"}`
 
 ## Troubleshooting
--   If the service (port 3006) is unreachable, notify the user immediately via text and suggest checking the Docker container or Node.js service.
+-   If the MCP service (port 3021) is unreachable, notify the user immediately via text and suggest checking the Docker container status with `docker ps`.
+-   If `C:/.tts` directories are not accessible, verify Docker volume mounts in docker-compose.yml.
 -   If `C:/temp` is not writable, use the workspace's `temp` directory or another writable location.
 
 ## Anti-Patterns
